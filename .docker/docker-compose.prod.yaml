@@ -8,7 +8,7 @@ services:
     depends_on:
       - web
     ports:
-      - "80:80"
+      - "443:443"
     restart: unless-stopped
 
   web:
@@ -42,17 +42,6 @@ services:
       context: ../
       dockerfile: .docker/default/Dockerfile
     command: celery -A web worker --loglevel=info --pool=solo
-    volumes:
-      - ..:/app
-    depends_on:
-      - postgres
-    restart: unless-stopped
-
-  celery_beat:
-    build:
-      context: ../
-      dockerfile: .docker/default/Dockerfile
-    command: celery -A web beat --loglevel=info
     volumes:
       - ..:/app
     depends_on:

@@ -139,3 +139,6 @@ class RaffleAdmin(admin.ModelAdmin):
             raffle.save()
             
             self.message_user(request, f"Розыгрыш '{raffle.name}' успешно проведен! Награждено победителей: {actual_winners_count}.")
+
+
+admin.site.register(FAQ)

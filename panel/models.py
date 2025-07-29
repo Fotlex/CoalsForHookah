@@ -83,6 +83,19 @@ class Prize(models.Model):
     class Meta: verbose_name, verbose_name_plural = "Приз", "Призы"
 
 
+class FAQ(models.Model):
+    question = models.CharField(max_length=512)
+    answer = models.TextField()
+    image = models.ImageField('Фото/Картинка к ответу', blank=True, null=True, upload_to='media/')
+    
+    def __str__(self):
+        return self.question
+    
+    
+    class Meta:
+        verbose_name = 'Вопросы и ответы'
+        verbose_name_plural = 'Вопросы и ответы'
+
 
 class Attachments(models.Model):
     types = {

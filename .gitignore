@@ -3,7 +3,9 @@ __pycache__/
 *$py.class
 
 *.so
-
+static_root
+media
+/media
 .Python
 env/
 build/

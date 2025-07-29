@@ -11,6 +11,8 @@ DEBUG = config.DEBUG
 
 ALLOWED_HOSTS = config.DJANGO_ALLOWED_HOSTS
 
+CSRF_TRUSTED_ORIGINS = config.CSRF_TRUSTED_ORIGINS
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -56,7 +58,7 @@ DATABASES = {
         'NAME': config.DB_NAME,
         'USER': config.DB_USER,
         'PASSWORD': config.DB_PASSWORD,
-        'HOST': config.DB_HOST if not config.DEBUG else 'localhost',
+        'HOST': config.DB_HOST,
         'PORT': config.DB_PORT,
     }
 }
@@ -75,6 +77,7 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
 
 LANGUAGE_CODE = 'ru'
 

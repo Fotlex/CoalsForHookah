@@ -12,7 +12,7 @@ from aiogram import Bot, Dispatcher
 from config import config
 import asyncio
 
-from handlers import router
+from handlers import main_handler, FAQ_handler
 from middlewares import UserMiddleware
 from aiogram.utils.callback_answer import CallbackAnswerMiddleware
 
@@ -24,7 +24,7 @@ async def main():
     dp.callback_query.outer_middleware(CallbackAnswerMiddleware())
     dp.callback_query.outer_middleware(UserMiddleware())
     dp.message.outer_middleware(UserMiddleware())
-    dp.include_router(router)
+    dp.include_routers(main_handler.router, FAQ_handler.router)
 
     logging.basicConfig(level=logging.INFO)
     logger = logging.getLogger(__name__)
