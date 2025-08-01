@@ -11,13 +11,13 @@ from panel.models import FAQ
 router = Router()
 
 
-@router.callback_query(F.data == 'FAQ')
-async def faq_helper(callback: CallbackQuery, bot: Bot):
+@router.message(F.text == 'FAQ')
+async def faq_helper(message: Message, bot: Bot):
     bot_info = await bot.get_me()
-    await callback.answer(text=f'Чтобы воспользоваться'
+    await message.answer(text=f'Чтобы воспользоваться'
                           f'поиском вопросов введите в любой чат @{bot_info.username}'
                           f' и выберите интересующий вас вопрос',
-                          show_alert=True)
+    )
 
 
 @router.inline_query()

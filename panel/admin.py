@@ -1,12 +1,21 @@
 import random
-
+import openpyxl
 from django.contrib import admin
 from panel.models import *
 
+from django.http import HttpResponse
+from django.urls import path, reverse
+from django.shortcuts import render, redirect
 from django.contrib import admin, messages
+from django.db import transaction
 from asgiref.sync import async_to_sync
 from aiogram import Bot
 from config import config
+
+
+from .forms import CouponGenerationForm
+
+
 
 
 @admin.register(User)
@@ -51,6 +60,7 @@ async def notify_winner_task(bot_token, chat_id, prize_description, raffle_name)
     finally:
         await bot.session.close()
 
+
 class CouponOwnerFilter(admin.SimpleListFilter):
     title = 'статус активации' 
     parameter_name = 'owner_status' 
@@ -68,6 +78,7 @@ class CouponOwnerFilter(admin.SimpleListFilter):
             return queryset.filter(owner__isnull=True)
         return queryset
 
+
 @admin.register(Coupon)
 class CouponAdmin(admin.ModelAdmin):
     list_display = ('code', 'owner', 'is_used')
@@ -80,6 +91,66 @@ class CouponAdmin(admin.ModelAdmin):
         if hasattr(obj, 'won_prize') and obj.won_prize:
             return f"'{obj.won_prize.description}' в '{obj.won_prize.raffle.name}'"
         return "—"
+
+    actions = ['generate_coupons_action', 'export_unused_coupons_action']
+
+
+
+    @admin.action(description='Сгенерировать купоны пачкой')
+    def generate_coupons_action(self, request, queryset):
+        if 'apply' in request.POST:
+            form = CouponGenerationForm(request.POST)
+            if form.is_valid():
+                quantity = form.cleaned_data['quantity']
+
+                try:
+                    with transaction.atomic():
+                        coupons_to_create = [
+                            Coupon(owner=None, is_used=False) for _ in range(quantity)
+                        ]
+                        Coupon.objects.bulk_create(coupons_to_create, ignore_conflicts=True)
+                    
+                    self.message_user(request, f"Успешно создано {quantity} новых купонов.", messages.SUCCESS)
+                    return redirect(request.get_full_path())
+                
+                except Exception as e:
+                    self.message_user(request, f"Произошла ошибка при генерации: {e}", messages.ERROR)
+                    return redirect(request.get_full_path())
+
+        else:
+            form = CouponGenerationForm()
+            return render(request, 'admin/generate_coupons_intermediate.html', {
+                'title': 'Генерация купонов',
+                'queryset': queryset,
+                'form': form
+            })
+        
+
+    @admin.action(description='Выгрузить неиспользованные купоны в Excel')
+    def export_unused_coupons_action(self, request, queryset):
+        coupons_to_export = Coupon.objects.filter(owner__isnull=True, is_used=False).order_by('code')
+
+        if not coupons_to_export.exists():
+            self.message_user(request, "Нет неактивированных и неиспользованных купонов для выгрузки.", messages.WARNING)
+            return
+
+        workbook = openpyxl.Workbook()
+        worksheet = workbook.active
+        worksheet.title = 'Неиспользованные купоны'
+
+        worksheet.append(['Код купона'])
+
+        for code, in coupons_to_export.values_list('code'):
+            worksheet.append([code])
+        
+        response = HttpResponse(
+            content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        )
+        response['Content-Disposition'] = 'attachment; filename="unused_coupons.xlsx"'
+        
+        workbook.save(response)
+        return response
+
 
 class PrizeInline(admin.TabularInline):
     model = Prize
