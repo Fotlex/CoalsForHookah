@@ -84,8 +84,8 @@ class Prize(models.Model):
 
 
 class FAQ(models.Model):
-    question = models.CharField(max_length=512)
-    answer = models.TextField()
+    question = models.CharField(max_length=512, verbose_name='Вопрос')
+    answer = models.TextField(verbose_name='Ответ')
     image = models.ImageField('Фото/Картинка к ответу', blank=True, null=True, upload_to='media/')
     
     def __str__(self):
