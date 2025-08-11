@@ -98,7 +98,7 @@ async def paginate_faq_questions(callback: CallbackQuery, callback_data: Paginat
 @router.callback_query(FaqQuestionCallback.filter())
 async def send_faq_answer(callback: CallbackQuery, callback_data: FaqQuestionCallback):
     try:
-        faq_item = await sync_to_async(FAQ.objects.aget)(id=callback_data.question_id)
+        faq_item = await FAQ.objects.aget(id=callback_data.question_id)
 
         try:
             photo = FSInputFile(faq_item.image.path)
