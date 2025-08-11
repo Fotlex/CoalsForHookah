@@ -86,7 +86,7 @@ base_commands:
 
 
 .PHONY: super_user
-base_commands:
+super_user:
 	@echo "Collecting static files for $(ENV) environment..."
 	@$(DOCKER_COMPOSE) exec web python manage.py migrate --noinput
 	@$(DOCKER_COMPOSE) exec web python manage.py createsuperuser
