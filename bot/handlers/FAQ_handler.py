@@ -107,15 +107,14 @@ async def send_faq_answer(callback: CallbackQuery, callback_data: FaqQuestionCal
                 caption=faq_item.answer
             )
         except Exception as e:
-            await callback.message.answer(text=faq_item.answer) # Отправляем только текст
+            await callback.message.answer(text=faq_item.answer)
             
 
         await callback.answer() 
 
     except models.ObjectDoesNotExist: 
         await callback.message.answer("Извините, этот вопрос FAQ не найден. Возможно, он был удален.")
-        await callback.answer("Вопрос не найден", show_alert=True) 
     except Exception as e:
         await callback.message.answer("Произошла ошибка при получении ответа. Пожалуйста, попробуйте позже.")
-        await callback.answer("Ошибка!", show_alert=True) 
+        print(e)
     
