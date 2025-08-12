@@ -183,7 +183,9 @@ class RaffleAdmin(admin.ModelAdmin):
                 raffle.is_finished = True 
                 raffle.save()
                 continue
-
+            
+            coupon_ids_to_deactivate = [coupon.id for coupon in available_coupons]
+            
             random.shuffle(prizes_to_award)
             random.shuffle(available_coupons)
 
@@ -205,6 +207,10 @@ class RaffleAdmin(admin.ModelAdmin):
                     prize_description=awarded_prize.description, 
                     raffle_name=raffle.name
                 )
+                
+            if coupon_ids_to_deactivate: 
+                Coupon.objects.filter(id__in=coupon_ids_to_deactivate).update(is_used=True)
+
             
             raffle.is_finished = True
             raffle.save()
