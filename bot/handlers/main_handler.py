@@ -20,6 +20,18 @@ class StateCode(StatesGroup):
     wait_code = State()
 
 
+MAIN_TEXT = '''Добро пожаловать в бот для проведения розыгрышей BauBau_bot!
+
+В этом боте вы можете зарегистрировать свой код с пачки угля BauBau и поучаствовать в ежемесячном розыгрыше призов. 
+
+➡️ Призовой фонд обновляется каждый месяц
+➡️ Победители выбираются случайным образом
+➡️ Каждый участник может регистрировать неограниченное количество купонов. Больше угля — больше шансов на победу!
+➡️ Итоги подводятся каждый последний день месяца
+
+❗️Чтобы выиграть один из призов, просто нажмите кнопку «добавить купон» и укажите ваш уникальный код.'''
+
+
 @sync_to_async
 def get_latest_active_raffle_with_prizes():
     try:
@@ -36,7 +48,7 @@ def get_latest_active_raffle_with_prizes():
 
 @router.message(CommandStart())
 async def start_f(message: Message):
-    await message.answer('Приветственное сообщение', reply_markup=main_keyboard)
+    await message.answer(text=MAIN_TEXT, reply_markup=main_keyboard)
 
 
 @router.message(F.text == 'Добавить купон')

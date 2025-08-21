@@ -4,8 +4,8 @@ __pycache__/
 
 *.so
 static_root
-media
-/media
+
+
 .Python
 env/
 build/
